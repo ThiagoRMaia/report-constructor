@@ -15,21 +15,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
           bundler-cache: true
+
       - name: Run tests
         run: bundle exec rspec --format html --out index.html
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: index.html
+
+  deploy:
+    environment:
+      name: github-pages
+      needs: test
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download test results
+        uses: actions/download-artifact@v3
+        with:
+          name: report
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
