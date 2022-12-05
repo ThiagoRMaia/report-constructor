@@ -31,6 +31,7 @@ jobs:
       - name: Run tests
         run: bundle exec rspec --format html --out index.html
 
+      # Upload test results to be used in another job
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:
@@ -38,25 +39,34 @@ jobs:
           path: index.html
 
   deploy:
+    # Run after the first job
     needs: test
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      # Download the artifact called "report" uploaded on the first job
       - name: Download test results
         uses: actions/download-artifact@v3
         with:
           name: report
+
       - name: Setup Pages
         uses: actions/configure-pages@v2
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
           path: '.'
+          
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
