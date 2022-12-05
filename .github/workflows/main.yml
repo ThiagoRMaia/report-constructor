@@ -38,9 +38,9 @@ jobs:
           path: index.html
 
   deploy:
+    needs: test
     environment:
       name: github-pages
-      needs: test
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
