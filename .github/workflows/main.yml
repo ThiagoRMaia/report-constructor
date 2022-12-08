@@ -1,7 +1,10 @@
 # .github/workflows/main.yaml
 name: Main
 
-on: [push, workflow_dispatch]
+on:
+  push:
+
+  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
